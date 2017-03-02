@@ -18,15 +18,17 @@ import java.io.File;
 
 public class RealPathUtil {
 
-	public static @Nullable Uri compatUriFromFile(@NonNull final Context context,
-												  @NonNull final File file) {
+	private static @Nullable Uri compatUriFromFile(@NonNull final Context context,
+												  @NonNull final File file,
+												  @Nullable final String customAuthoritySuffix) {
 		Uri result = null;
 		if (Build.VERSION.SDK_INT < 21) {
 			result = Uri.fromFile(file);
 		}
 		else {
 			final String packageName = context.getApplicationContext().getPackageName();
-			final String authority =  new StringBuilder(packageName).append(".provider").toString();
+			final String authoritySuffix = customAuthoritySuffix != null ? customAuthoritySuffix : "provider";
+			final String authority = packageName + "." + authoritySuffix;
 			try {
 				result = FileProvider.getUriForFile(context, authority, file);
 			}
@@ -37,9 +39,11 @@ public class RealPathUtil {
 		return result;
 	}
 
+
 	@SuppressLint("NewApi")
 	public static @Nullable String getRealPathFromURI(@NonNull final Context context,
-													  @NonNull final Uri uri) {
+													  @NonNull final Uri uri,
+													  @Nullable final String customAuthoritySuffix) {
 
 		final boolean isKitKat = Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
 
@@ -96,7 +100,7 @@ public class RealPathUtil {
 			if (isGooglePhotosUri(uri))
 				return uri.getLastPathSegment();
 
-			if (isFileProviderUri(context, uri))
+			if (isFileProviderUri(context, uri, customAuthoritySuffix))
 				return getFileProviderPath(context, uri);
 
 			return getDataColumn(context, uri, null, null);
@@ -181,9 +185,11 @@ public class RealPathUtil {
 	 * @return Whether the Uri authority is FileProvider
 	 */
 	public static boolean isFileProviderUri(@NonNull final Context context,
-	                                        @NonNull final Uri uri) {
+	                                        @NonNull final Uri uri,
+                                          @Nullable final String customAuthoritySuffix) {
+		final String authoritySuffix = customAuthoritySuffix != null ? customAuthoritySuffix : "fileprovider";
 		final String packageName = context.getPackageName();
-		final String authority = new StringBuilder(packageName).append(".provider").toString();
+		final String authority = packageName + "." + authoritySuffix;
 		return authority.equals(uri.getAuthority());
 	}
 

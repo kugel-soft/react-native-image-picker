@@ -72,6 +72,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
   private ReadableMap options;
   protected Uri cameraCaptureURI;
   private Boolean noData = false;
+  private String customAuthoritySuffix = null;
   private Boolean pickVideo = false;
   private ImageConfig imageConfig = new ImageConfig(null, null, 0, 0, 100, 0, false);
 
@@ -254,7 +255,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
       imageConfig = imageConfig.withOriginalFile(original);
 
       if (imageConfig.original != null) {
-        cameraCaptureURI = RealPathUtil.compatUriFromFile(reactContext, imageConfig.original);
+        cameraCaptureURI = RealPathUtil.compatUriFromFile(reactContext, imageConfig.original, customAuthoritySuffix);
       }else {
         responseHelper.invokeError(callback, "Couldn't get file path for photo");
         return;
@@ -626,7 +627,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
   }
 
   private @NonNull String getRealPathFromURI(@NonNull final Uri uri) {
-    return RealPathUtil.getRealPathFromURI(reactContext, uri);
+    return RealPathUtil.getRealPathFromURI(reactContext, uri, customAuthoritySuffix);
   }
 
   /**
@@ -720,5 +721,9 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
     if (options.hasKey("durationLimit")) {
       videoDurationLimit = options.getInt("durationLimit");
     }
+    if (options.hasKey("authoritySuffix")) {
+      customAuthoritySuffix = options.getString("authoritySuffix");
+    }
   }
+
 }
