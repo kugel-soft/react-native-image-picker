@@ -20,6 +20,7 @@ public class ImageConfig
     public final int quality;
     public final int rotation;
     public final boolean saveToCameraRoll;
+    public @NonNull final String storagePath;
 
     public ImageConfig(@Nullable final File original,
                        @Nullable final File resized,
@@ -27,7 +28,8 @@ public class ImageConfig
                        final int maxHeight,
                        final int quality,
                        final int rotation,
-                       final boolean saveToCameraRoll)
+                       final boolean saveToCameraRoll,
+                       @Nullable final String storagePath)
     {
         this.original = original;
         this.resized = resized;
@@ -36,6 +38,7 @@ public class ImageConfig
         this.quality = quality;
         this.rotation = rotation;
         this.saveToCameraRoll = saveToCameraRoll;
+        this.storagePath = storagePath != null ? storagePath : "/";
     }
 
     public @NonNull ImageConfig withMaxWidth(final int maxWidth)
@@ -43,7 +46,7 @@ public class ImageConfig
         return new ImageConfig(
                 this.original, this.resized, maxWidth,
                 this.maxHeight, this.quality, this.rotation,
-                this.saveToCameraRoll
+                this.saveToCameraRoll, this.storagePath
         );
     }
 
@@ -52,7 +55,7 @@ public class ImageConfig
         return new ImageConfig(
                 this.original, this.resized, this.maxWidth,
                 maxHeight, this.quality, this.rotation,
-                this.saveToCameraRoll
+                this.saveToCameraRoll, this.storagePath
         );
 
     }
@@ -62,7 +65,7 @@ public class ImageConfig
         return new ImageConfig(
                 this.original, this.resized, this.maxWidth,
                 this.maxHeight, quality, this.rotation,
-                this.saveToCameraRoll
+                this.saveToCameraRoll, this.storagePath
         );
     }
 
@@ -71,7 +74,16 @@ public class ImageConfig
         return new ImageConfig(
                 this.original, this.resized, this.maxWidth,
                 this.maxHeight, this.quality, rotation,
-                this.saveToCameraRoll
+                this.saveToCameraRoll, this.storagePath
+        );
+    }
+
+    public @NonNull ImageConfig withStoragePath(final String storagePath)
+    {
+        return new ImageConfig(
+                this.original, this.resized, this.maxWidth,
+                this.maxHeight, this.quality, this.rotation,
+                this.saveToCameraRoll, storagePath
         );
     }
 
@@ -80,7 +92,7 @@ public class ImageConfig
         return new ImageConfig(
                 original, this.resized, this.maxWidth,
                 this.maxHeight, this.quality, this.rotation,
-                this.saveToCameraRoll
+                this.saveToCameraRoll, this.storagePath
         );
     }
 
@@ -89,7 +101,7 @@ public class ImageConfig
         return new ImageConfig(
                 this.original, resized, this.maxWidth,
                 this.maxHeight, this.quality, this.rotation,
-                this.saveToCameraRoll
+                this.saveToCameraRoll, this.storagePath
         );
     }
 
@@ -98,7 +110,7 @@ public class ImageConfig
         return new ImageConfig(
                 this.original, this.resized, this.maxWidth,
                 this.maxHeight, this.quality, this.rotation,
-                saveToCameraRoll
+                saveToCameraRoll, this.storagePath
         );
     }
 
@@ -125,15 +137,20 @@ public class ImageConfig
             rotation = options.getInt("rotation");
         }
         boolean saveToCameraRoll = false;
+        String storagePath = null;
         if (options.hasKey("storageOptions"))
         {
             final ReadableMap storageOptions = options.getMap("storageOptions");
-            if (storageOptions.hasKey("cameraRoll"))
-            {
-                saveToCameraRoll = storageOptions.getBoolean("cameraRoll");
+            if (storageOptions != null) {
+                if (storageOptions.hasKey("path")) {
+                    storagePath = storageOptions.getString("path");
+                }
+                if (storageOptions.hasKey("cameraRoll")) {
+                    saveToCameraRoll = storageOptions.getBoolean("cameraRoll");
+                }
             }
         }
-        return new ImageConfig(this.original, this.resized, maxWidth, maxHeight, quality, rotation, saveToCameraRoll);
+        return new ImageConfig(this.original, this.resized, maxWidth, maxHeight, quality, rotation, saveToCameraRoll, storagePath);
     }
 
     public boolean useOriginal(int initialWidth,

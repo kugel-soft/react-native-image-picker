@@ -74,7 +74,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
   private Boolean noData = false;
   private String customAuthoritySuffix = null;
   private Boolean pickVideo = false;
-  private ImageConfig imageConfig = new ImageConfig(null, null, 0, 0, 100, 0, false);
+  private ImageConfig imageConfig = new ImageConfig(null, null, 0, 0, 100, 0, false, null);
 
   @Deprecated
   private int videoQuality = 1;
@@ -83,8 +83,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
   private int videoDurationLimit = 0;
 
   private ResponseHelper responseHelper = new ResponseHelper();
-  private PermissionListener listener = new PermissionListener()
-  {
+  private PermissionListener listener = new PermissionListener() {
     public boolean onRequestPermissionsResult(final int requestCode,
                                               @NonNull final String[] permissions,
                                               @NonNull final int[] grantResults)
@@ -149,7 +148,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
 
     this.callback = callback;
     this.options = options;
-    imageConfig = new ImageConfig(null, null, 0, 0, 100, 0, false);
+    imageConfig = new ImageConfig(null, null, 0, 0, 100, 0, false, null);
 
     final AlertDialog dialog = UI.chooseDialog(this, options, new UI.OnAction()
     {
@@ -251,7 +250,7 @@ public class ImagePickerModule extends ReactContextBaseJavaModule
       requestCode = REQUEST_LAUNCH_IMAGE_CAPTURE;
       cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-      final File original = createNewFile(reactContext, this.options, false);
+      final File original = createNewFile(reactContext, this.options, false, imageConfig.storagePath);
       imageConfig = imageConfig.withOriginalFile(original);
 
       if (imageConfig.original != null) {

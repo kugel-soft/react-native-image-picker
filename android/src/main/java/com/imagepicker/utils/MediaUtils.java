@@ -39,7 +39,8 @@ public class MediaUtils
 {
     public static @Nullable File createNewFile(@NonNull final Context reactContext,
                                                @NonNull final ReadableMap options,
-                                               @NonNull final boolean forceLocal)
+                                               @NonNull final boolean forceLocal,
+                                               @NonNull final String storagePath)
     {
         final String filename = new StringBuilder("image-")
                 .append(UUID.randomUUID().toString())
@@ -47,8 +48,8 @@ public class MediaUtils
                 .toString();
 
         final File path = ReadableMapUtils.hasAndNotNullReadableMap(options, "storageOptions") && !forceLocal
-                ? Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-                : reactContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                ? new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), storagePath)
+                : new File(reactContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES), storagePath);
 
         File result = new File(path, filename);
 
@@ -156,7 +157,7 @@ public class MediaUtils
         scaledPhoto.compress(Bitmap.CompressFormat.JPEG, result.quality, bytes);
 
         final boolean forceLocal = requestCode == REQUEST_LAUNCH_IMAGE_CAPTURE;
-        final File resized = createNewFile(context, options, !forceLocal);
+        final File resized = createNewFile(context, options, !forceLocal, imageConfig.storagePath);
 
         if (resized == null)
         {

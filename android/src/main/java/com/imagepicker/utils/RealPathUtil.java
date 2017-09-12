@@ -18,7 +18,7 @@ import java.io.File;
 
 public class RealPathUtil {
 
-	private static @Nullable Uri compatUriFromFile(@NonNull final Context context,
+	public static @Nullable Uri compatUriFromFile(@NonNull final Context context,
 												  @NonNull final File file,
 												  @Nullable final String customAuthoritySuffix) {
 		Uri result = null;
